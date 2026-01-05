@@ -38,16 +38,16 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
             placeholder="DIGITE O TEMA"
-            className="w-full pl-12 pr-16 py-5 bg-transparent border-none text-cyan-50 font-tech tracking-wider uppercase placeholder:text-slate-700 focus:ring-0 text-sm md:text-base"
+            className="w-full pl-12 pr-24 py-5 bg-transparent border-none text-cyan-50 font-tech tracking-wider uppercase placeholder:text-slate-700 focus:ring-0 text-sm md:text-base"
             disabled={isLoading}
           />
           
-          {/* Opção de Limpar */}
+          {/* Opção de Limpar - Ajustada posição */}
           {theme && !isLoading && (
             <button 
               type="button"
               onClick={handleClear}
-              className="absolute right-4 px-2 py-1 font-tech text-[9px] text-slate-500 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/30 rounded transition-all uppercase tracking-widest"
+              className="absolute right-4 px-3 py-1.5 font-tech text-[8px] md:text-[9px] text-slate-500 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/30 rounded transition-all uppercase tracking-[0.2em] bg-slate-950/50 backdrop-blur-sm"
               title="Limpar Tema"
             >
               Limpar
@@ -93,7 +93,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
         <div className="flex gap-1">
           {[1,2,3,4].map(i => <div key={i} className="w-1 h-1 bg-cyan-500/20 rounded-full"></div>)}
         </div>
-        <span className="font-tech text-[10px] text-slate-600 tracking-tighter uppercase">Status: Pronto para entrada de dados</span>
+        <span className="font-tech text-[10px] text-slate-600 tracking-tighter uppercase italic">Status: Link Neural Operacional</span>
       </div>
       
       <style>{`

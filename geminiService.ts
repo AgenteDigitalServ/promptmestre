@@ -2,14 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedPrompt } from "./types.ts";
 
-// Função auxiliar para inicializar o AI com segurança
-const createAIInstance = () => {
-  const apiKey = (typeof process !== 'undefined' && process.env?.API_KEY) || "";
-  return new GoogleGenAI({ apiKey });
-};
-
 export const generatePromptFromTheme = async (theme: string): Promise<GeneratedPrompt> => {
-  const ai = createAIInstance();
+  // Inicialização direta conforme diretrizes
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
