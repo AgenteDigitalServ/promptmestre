@@ -2,9 +2,15 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedPrompt } from "./types.ts";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Função auxiliar para inicializar o AI com segurança
+const createAIInstance = () => {
+  const apiKey = (typeof process !== 'undefined' && process.env?.API_KEY) || "";
+  return new GoogleGenAI({ apiKey });
+};
 
 export const generatePromptFromTheme = async (theme: string): Promise<GeneratedPrompt> => {
+  const ai = createAIInstance();
+  
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Gere um prompt mestre profissional para o tema: "${theme}". 
@@ -40,7 +46,8 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
     }
   });
 
-  const result = JSON.parse(response.text.trim());
+  const text = response.text || "";
+  const result = JSON.parse(text.trim());
   
   return {
     ...result,
