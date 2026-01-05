@@ -3,27 +3,20 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedPrompt } from "./types.ts";
 
 export const generatePromptFromTheme = async (theme: string): Promise<GeneratedPrompt> => {
-  // Inicialização padrão usando a variável de ambiente process.env.API_KEY
+  // Inicialização direta. O erro no navegador ocorre se process.env.API_KEY for undefined.
+  // Em ambientes de desenvolvimento locais ou hospedagens com build, este valor é injetado.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-preview",
+    model: "gemini-3-flash-preview", // Modelo recomendado para contas gratuitas e respostas rápidas
     contents: [{
       parts: [{
-        text: `Você é um Engenheiro de Prompt Sênior especialista em LLMs (ChatGPT, Claude, Gemini). 
-        Sua tarefa é criar um prompt "mestre" de elite para o tema: "${theme}". 
-        
-        O prompt resultante deve ser estruturado com:
-        - Persona clara e autoridade no assunto.
-        - Objetivos específicos e restrições.
-        - Guia passo a passo para a IA.
-        - Formato de saída desejado.
-        
-        Responda obrigatoriamente em formato JSON puro.`
+        text: `Atue como um Engenheiro de Prompt Sênior. Gere um prompt mestre altamente detalhado para o tema: "${theme}". 
+        Inclua Persona, Contexto, Instruções Passo a Passo e Formato de Saída.
+        Responda estritamente em JSON.`
       }]
     }],
     config: {
-      thinkingConfig: { thinkingBudget: 8000 },
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -53,9 +46,7 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
   });
 
   const text = response.text;
-  if (!text) {
-    throw new Error("O motor neural não retornou dados. Tente reenviar o tema.");
-  }
+  if (!text) throw new Error("A rede neural não retornou dados.");
 
   try {
     const result = JSON.parse(text.trim());
@@ -65,8 +56,7 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
       theme,
       timestamp: Date.now()
     };
-  } catch (parseError) {
-    console.error("Falha ao processar JSON:", text);
-    throw new Error("Falha ao decodificar resposta neural. Reiniciando buffers...");
+  } catch (err) {
+    throw new Error("Erro ao decodificar a resposta neural. Tente novamente.");
   }
 };

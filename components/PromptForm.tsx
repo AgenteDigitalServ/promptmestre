@@ -23,13 +23,13 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
       <div className="relative flex flex-col md:flex-row gap-0 bg-slate-900 border border-slate-700/50 rounded-lg shadow-2xl overflow-hidden">
         <div className="hidden md:block w-1.5 bg-cyan-500/50 self-stretch"></div>
         
-        <div className="flex-1 relative flex items-center group/input">
+        <div className="flex-1 relative flex items-center">
           <input 
             type="text" 
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
             placeholder="DIGITE O TEMA DO PROMPT"
-            className="w-full pl-6 pr-20 py-5 bg-transparent border-none text-cyan-50 font-tech tracking-wider uppercase placeholder:text-slate-700 focus:ring-0 text-sm md:text-base"
+            className="w-full pl-6 pr-24 py-5 bg-transparent border-none text-cyan-50 font-tech tracking-wider uppercase placeholder:text-slate-700 focus:ring-0 text-sm md:text-base"
             disabled={isLoading}
           />
           
@@ -37,9 +37,9 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
             <button 
               type="button"
               onClick={() => setTheme('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 font-tech text-[8px] text-slate-500 hover:text-red-400 transition-colors uppercase tracking-widest bg-slate-950/50 border border-slate-800 rounded"
+              className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1 font-tech text-[10px] text-slate-500 hover:text-red-400 transition-colors uppercase tracking-widest bg-slate-950/80 border border-slate-800 rounded z-10"
             >
-              Limpar
+              LIMPAR
             </button>
           )}
         </div>
@@ -68,9 +68,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
               <span>Executar Geração</span>
             )}
           </div>
-          {!isLoading && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_2s_infinite]"></div>
-          )}
         </button>
       </div>
 
@@ -80,12 +77,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
         </div>
         <span className="font-tech text-[10px] text-slate-600 tracking-tighter uppercase italic">Status: Pronto para entrada</span>
       </div>
-      
-      <style>{`
-        @keyframes shimmer {
-          100% { transform: translateX(100%); }
-        }
-      `}</style>
     </form>
   );
 };
