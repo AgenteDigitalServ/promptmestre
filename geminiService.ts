@@ -3,18 +3,19 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedPrompt } from "./types.ts";
 
 export const generatePromptFromTheme = async (theme: string): Promise<GeneratedPrompt> => {
-  // Acesso direto à variável de ambiente injetada pelo provedor de hospedagem
-  const apiKey = process.env.API_KEY?.trim();
+  // Busca a chave em process.env.API_KEY ou VITE_API_KEY (comum em hospedagens como Netlify/Vercel)
+  const rawKey = process.env.API_KEY || (process.env as any).VITE_API_KEY || "";
+  const apiKey = rawKey.trim().replace(/['"]/g, '');
   
-  if (!apiKey || apiKey === "undefined") {
-    throw new Error("SISTEMA BLOQUEADO: A chave 'API_KEY' não foi configurada corretamente nas variáveis de ambiente do seu site.");
+  if (!apiKey || apiKey === "undefined" || apiKey === "") {
+    throw new Error("CHAVE NÃO DETECTADA: Certifique-se de que a variável de ambiente está salva no painel do site e que você realizou um novo DEPLOY após configurá-la.");
   }
 
-  // Inicialização no momento do uso para garantir o contexto correto
+  // Inicializa o cliente com a chave encontrada
   const ai = new GoogleGenAI({ apiKey });
   
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview", // Modelo mais rápido e com menos limites de erro 429
+    model: "gemini-3-flash-preview", 
     contents: [{
       parts: [{
         text: `Atue como um Engenheiro de Prompt Sênior. Gere um prompt mestre detalhado para o tema: "${theme}". 
@@ -52,7 +53,7 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
   });
 
   const text = response.text;
-  if (!text) throw new Error("ERRO DE CONEXÃO: A rede neural não retornou dados válidos.");
+  if (!text) throw new Error("A rede neural não retornou dados. Verifique sua conexão ou cota da API.");
 
   try {
     const result = JSON.parse(text.trim());
@@ -63,6 +64,6 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
       timestamp: Date.now()
     };
   } catch (err) {
-    throw new Error("ERRO DE SINTAXE: Falha ao decodificar a resposta neural.");
+    throw new Error("Erro ao processar a resposta da IA. Tente reformular o tema.");
   }
 };
