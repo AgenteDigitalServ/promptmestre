@@ -37,7 +37,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
             <button 
               type="button"
               onClick={() => setTheme('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1 font-tech text-[10px] text-slate-500 hover:text-red-400 transition-colors uppercase tracking-widest bg-slate-950/80 border border-slate-800 rounded z-10"
+              className="absolute right-4 px-2 py-1 font-tech text-[10px] text-slate-500 hover:text-red-400 transition-colors uppercase tracking-widest bg-slate-950/80 border border-slate-800 rounded z-20"
             >
               LIMPAR
             </button>

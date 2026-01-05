@@ -3,17 +3,23 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedPrompt } from "./types.ts";
 
 export const generatePromptFromTheme = async (theme: string): Promise<GeneratedPrompt> => {
-  // Inicialização direta. O erro no navegador ocorre se process.env.API_KEY for undefined.
-  // Em ambientes de desenvolvimento locais ou hospedagens com build, este valor é injetado.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Acesso direto à variável de ambiente injetada pelo provedor de hospedagem
+  const apiKey = process.env.API_KEY?.trim();
+  
+  if (!apiKey || apiKey === "undefined") {
+    throw new Error("SISTEMA BLOQUEADO: A chave 'API_KEY' não foi configurada corretamente nas variáveis de ambiente do seu site.");
+  }
+
+  // Inicialização no momento do uso para garantir o contexto correto
+  const ai = new GoogleGenAI({ apiKey });
   
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview", // Modelo recomendado para contas gratuitas e respostas rápidas
+    model: "gemini-3-flash-preview", // Modelo mais rápido e com menos limites de erro 429
     contents: [{
       parts: [{
-        text: `Atue como um Engenheiro de Prompt Sênior. Gere um prompt mestre altamente detalhado para o tema: "${theme}". 
-        Inclua Persona, Contexto, Instruções Passo a Passo e Formato de Saída.
-        Responda estritamente em JSON.`
+        text: `Atue como um Engenheiro de Prompt Sênior. Gere um prompt mestre detalhado para o tema: "${theme}". 
+        O prompt deve incluir Persona, Contexto, Instruções Passo a Passo e Formato de Saída.
+        Responda obrigatoriamente em JSON puro.`
       }]
     }],
     config: {
@@ -46,7 +52,7 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
   });
 
   const text = response.text;
-  if (!text) throw new Error("A rede neural não retornou dados.");
+  if (!text) throw new Error("ERRO DE CONEXÃO: A rede neural não retornou dados válidos.");
 
   try {
     const result = JSON.parse(text.trim());
@@ -57,6 +63,6 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
       timestamp: Date.now()
     };
   } catch (err) {
-    throw new Error("Erro ao decodificar a resposta neural. Tente novamente.");
+    throw new Error("ERRO DE SINTAXE: Falha ao decodificar a resposta neural.");
   }
 };
