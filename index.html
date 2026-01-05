@@ -8,24 +8,76 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Tektur:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-purple: #bc13fe;
+            --bg-dark: #020617;
+        }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
+            font-family: 'Tektur', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            color: #e2e8f0;
+        }
+        .font-tech {
+            font-family: 'Michroma', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        .font-logo {
+            font-family: 'Syncopate', sans-serif;
+            letter-spacing: -0.05em;
         }
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
         .gradient-text {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, #6366f1 50%, var(--neon-purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .cyber-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.3), transparent, rgba(188, 19, 254, 0.3));
+            z-index: -1;
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            -webkit-mask-composite: xor;
+            padding: 1px;
+            pointer-events: none;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 242, 255, 0) 0%, rgba(0, 242, 255, 0.02) 50%, rgba(0, 242, 255, 0) 100%);
+            opacity: 0.1;
+            position: fixed;
+            bottom: 100%;
+            pointer-events: none;
+            animation: scanline 8s linear infinite;
+        }
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100px; }
         }
     </style>
 <script type="importmap">
@@ -40,6 +92,7 @@
 </script>
 </head>
 <body>
+    <div class="scanline"></div>
     <div id="root"></div>
 </body>
 </html>

@@ -3,6 +3,7 @@ export interface GeneratedPrompt {
   id: string;
   theme: string;
   category: string;
+  isFavorite?: boolean;
   mainPrompt: {
     persona: string;
     objective: string;

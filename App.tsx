@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generatePromptFromTheme } from './geminiService';
 import { GeneratedPrompt, PromptState } from './types';
 import Header from './components/Header';
@@ -17,7 +17,6 @@ const App: React.FC = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Load history from localStorage on mount
   useEffect(() => {
     const savedHistory = localStorage.getItem('prompt_mestre_history');
     if (savedHistory) {
@@ -29,7 +28,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Save history to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('prompt_mestre_history', JSON.stringify(state.history));
   }, [state.history]);
@@ -38,20 +36,40 @@ const App: React.FC = () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     try {
       const newPrompt = await generatePromptFromTheme(theme);
-      setState(prev => ({
-        ...prev,
-        currentPrompt: newPrompt,
-        history: [newPrompt, ...prev.history].slice(0, 50), // Keep last 50
-        isLoading: false,
-      }));
+      setState(prev => {
+        const updatedHistory = [newPrompt, ...prev.history].slice(0, 100);
+        return {
+          ...prev,
+          currentPrompt: newPrompt,
+          history: updatedHistory,
+          isLoading: false,
+        };
+      });
     } catch (err: any) {
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: "Ocorreu um erro ao gerar o prompt. Verifique sua conexão ou tente novamente."
+        error: "Ocorreu uma falha na rede neural. Verifique os buffers de conexão."
       }));
-      console.error(err);
     }
+  };
+
+  const toggleFavorite = (id: string) => {
+    setState(prev => {
+      const updatedHistory = prev.history.map(item => 
+        item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
+      );
+      
+      const updatedCurrent = prev.currentPrompt?.id === id 
+        ? { ...prev.currentPrompt, isFavorite: !prev.currentPrompt.isFavorite }
+        : prev.currentPrompt;
+
+      return {
+        ...prev,
+        history: updatedHistory,
+        currentPrompt: updatedCurrent
+      };
+    });
   };
 
   const selectHistoryItem = (prompt: GeneratedPrompt) => {
@@ -66,34 +84,36 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-slate-200 selection:bg-indigo-500/30">
+    <div className="min-h-screen text-slate-200 selection:bg-cyan-500/30 overflow-x-hidden">
       <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center mb-12 space-y-4">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-            Engenharia de <span className="gradient-text">Prompt</span> Pro
+      <main className="container mx-auto px-6 py-16 max-w-5xl">
+        <div className="text-center mb-16 space-y-6">
+          <h1 className="text-4xl md:text-6xl font-tech font-bold tracking-tighter uppercase leading-none">
+            Neural <span className="gradient-text">Prompt</span> Engine
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Transforme temas simples em instruções poderosas e estruturadas em segundos. 
-            Melhor que 90% dos prompts escritos manualmente.
-          </p>
         </div>
 
         <PromptForm onGenerate={handleGenerate} isLoading={state.isLoading} />
 
         {state.error && (
-          <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            {state.error}
+          <div className="mt-10 p-5 bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg flex items-center gap-4 animate-bounce">
+            <div className="w-10 h-10 flex-shrink-0 bg-red-500/10 rounded flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-tech text-xs font-bold uppercase tracking-widest">Erro de Sistema</span>
+              <p className="font-medium text-sm">{state.error}</p>
+            </div>
           </div>
         )}
 
         <PromptResult 
           prompt={state.currentPrompt} 
           isLoading={state.isLoading} 
+          onToggleFavorite={toggleFavorite}
         />
       </main>
 
@@ -105,8 +125,20 @@ const App: React.FC = () => {
         onClear={clearHistory}
       />
 
-      <footer className="py-8 text-center text-slate-500 text-sm">
-        <p>© {new Date().getFullYear()} Prompt Mestre — Desenvolvido com Gemini AI</p>
+      <footer className="py-12 text-center border-t border-slate-900/50 mt-12">
+        <div className="flex justify-center gap-12 mb-6">
+          <div className="flex flex-col items-center">
+            <span className="font-tech text-[8px] text-slate-700 uppercase font-bold tracking-[0.2em]">Hardware_Status</span>
+            <span className="font-tech text-[9px] text-emerald-500/60 uppercase">Online</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-tech text-[8px] text-slate-700 uppercase font-bold tracking-[0.2em]">Cloud_Link</span>
+            <span className="font-tech text-[9px] text-cyan-500/60 uppercase">Encrypted</span>
+          </div>
+        </div>
+        <p className="font-tech text-[9px] text-slate-600 uppercase tracking-[0.4em]">
+          TERMINAL_SESS_END // {new Date().getFullYear()} PROMPT_MESTRE_SYS
+        </p>
       </footer>
     </div>
   );
