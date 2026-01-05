@@ -66,8 +66,8 @@
         }
     </style>
     <script>
-        // Define o objeto process globalmente para evitar erros em tempo de execução no navegador
-        window.process = window.process || { env: {} };
+      // Polyfill crucial para garantir que process.env esteja disponível no bundle
+      window.process = window.process || { env: {} };
     </script>
     <script type="importmap">
 {

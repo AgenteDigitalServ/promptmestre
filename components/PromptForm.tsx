@@ -16,39 +16,28 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
     }
   };
 
-  const handleClear = () => {
-    setTheme('');
-  };
-
   return (
     <form onSubmit={handleSubmit} className="relative group max-w-3xl mx-auto">
       <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 rounded-lg blur opacity-10 group-focus-within:opacity-40 transition duration-500"></div>
       
       <div className="relative flex flex-col md:flex-row gap-0 bg-slate-900 border border-slate-700/50 rounded-lg shadow-2xl overflow-hidden">
-        {/* HUD Decoration Left */}
         <div className="hidden md:block w-1.5 bg-cyan-500/50 self-stretch"></div>
         
-        <div className="flex-1 relative flex items-center">
-          <div className="absolute left-4 flex flex-col gap-0.5 opacity-40">
-            <div className="w-4 h-[1px] bg-cyan-400"></div>
-            <div className="w-2 h-[1px] bg-cyan-400"></div>
-          </div>
+        <div className="flex-1 relative flex items-center group/input">
           <input 
             type="text" 
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
-            placeholder="DIGITE O TEMA"
-            className="w-full pl-12 pr-24 py-5 bg-transparent border-none text-cyan-50 font-tech tracking-wider uppercase placeholder:text-slate-700 focus:ring-0 text-sm md:text-base"
+            placeholder="DIGITE O TEMA DO PROMPT"
+            className="w-full pl-6 pr-20 py-5 bg-transparent border-none text-cyan-50 font-tech tracking-wider uppercase placeholder:text-slate-700 focus:ring-0 text-sm md:text-base"
             disabled={isLoading}
           />
           
-          {/* Opção de Limpar - Ajustada posição */}
           {theme && !isLoading && (
             <button 
               type="button"
-              onClick={handleClear}
-              className="absolute right-4 px-3 py-1.5 font-tech text-[8px] md:text-[9px] text-slate-500 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/30 rounded transition-all uppercase tracking-[0.2em] bg-slate-950/50 backdrop-blur-sm"
-              title="Limpar Tema"
+              onClick={() => setTheme('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 font-tech text-[8px] text-slate-500 hover:text-red-400 transition-colors uppercase tracking-widest bg-slate-950/50 border border-slate-800 rounded"
             >
               Limpar
             </button>
@@ -76,15 +65,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
                 <span>Processando</span>
               </>
             ) : (
-              <>
-                <span>Executar Geração</span>
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-              </>
+              <span>Executar Geração</span>
             )}
           </div>
-          {/* Button Scan Effect */}
           {!isLoading && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_2s_infinite]"></div>
           )}
         </button>
       </div>
@@ -93,7 +78,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
         <div className="flex gap-1">
           {[1,2,3,4].map(i => <div key={i} className="w-1 h-1 bg-cyan-500/20 rounded-full"></div>)}
         </div>
-        <span className="font-tech text-[10px] text-slate-600 tracking-tighter uppercase italic">Status: Link Neural Operacional</span>
+        <span className="font-tech text-[10px] text-slate-600 tracking-tighter uppercase italic">Status: Pronto para entrada</span>
       </div>
       
       <style>{`
