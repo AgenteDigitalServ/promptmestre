@@ -46,10 +46,11 @@ const App: React.FC = () => {
         };
       });
     } catch (err: any) {
+      console.error("Erro Neural detectado:", err);
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: "Ocorreu uma falha na rede neural. Verifique os buffers de conexão."
+        error: err.message || "Ocorreu uma falha inesperada na rede neural. Verifique os buffers de conexão."
       }));
     }
   };
@@ -97,15 +98,15 @@ const App: React.FC = () => {
         <PromptForm onGenerate={handleGenerate} isLoading={state.isLoading} />
 
         {state.error && (
-          <div className="mt-10 p-5 bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg flex items-center gap-4 animate-bounce">
-            <div className="w-10 h-10 flex-shrink-0 bg-red-500/10 rounded flex items-center justify-center">
+          <div className="mt-10 p-5 bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg flex items-center gap-4">
+            <div className="w-10 h-10 flex-shrink-0 bg-red-500/10 rounded flex items-center justify-center animate-pulse">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="font-tech text-xs font-bold uppercase tracking-widest">Erro de Sistema</span>
-              <p className="font-medium text-sm">{state.error}</p>
+              <span className="font-tech text-[10px] font-bold uppercase tracking-widest text-red-500/70">Relatório de Falha de Sistema</span>
+              <p className="font-medium text-xs md:text-sm font-mono opacity-90">{state.error}</p>
             </div>
           </div>
         )}
