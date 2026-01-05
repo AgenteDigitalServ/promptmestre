@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { generatePromptFromTheme } from './geminiService';
-import { GeneratedPrompt, PromptState } from './types';
-import Header from './components/Header';
-import PromptForm from './components/PromptForm';
-import PromptResult from './components/PromptResult';
-import HistorySidebar from './components/HistorySidebar';
+import { generatePromptFromTheme } from './geminiService.ts';
+import { GeneratedPrompt, PromptState } from './types.ts';
+import Header from './components/Header.tsx';
+import PromptForm from './components/PromptForm.tsx';
+import PromptResult from './components/PromptResult.tsx';
+import HistorySidebar from './components/HistorySidebar.tsx';
 
 const App: React.FC = () => {
   const [state, setState] = useState<PromptState>({

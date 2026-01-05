@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { GeneratedPrompt } from "./types";
+import { GeneratedPrompt } from "./types.ts";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
