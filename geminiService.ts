@@ -3,15 +3,34 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedPrompt } from "./types.ts";
 
 export const generatePromptFromTheme = async (theme: string): Promise<GeneratedPrompt> => {
-  // Busca a chave em process.env.API_KEY ou VITE_API_KEY (comum em hospedagens como Netlify/Vercel)
-  const rawKey = process.env.API_KEY || (process.env as any).VITE_API_KEY || "";
-  const apiKey = rawKey.trim().replace(/['"]/g, '');
+  // Tenta obter a chave de múltiplas fontes possíveis em sites hospedados
+  const getApiKey = () => {
+    // 1. Padrão process.env.API_KEY
+    if (process.env?.API_KEY) return process.env.API_KEY;
+    
+    // 2. Formato VITE (conforme print do Netlify)
+    if ((process.env as any)?.VITE_API_KEY) return (process.env as any).VITE_API_KEY;
+    
+    // 3. Fallback para window.process
+    if ((window as any).process?.env?.API_KEY) return (window as any).process.env.API_KEY;
+    if ((window as any).process?.env?.VITE_API_KEY) return (window as any).process.env.VITE_API_KEY;
+    
+    // 4. Fallback para import.meta (Vite nativo)
+    try {
+      const viteKey = (import.meta as any).env?.VITE_API_KEY;
+      if (viteKey) return viteKey;
+    } catch (e) {}
+
+    return null;
+  };
+
+  const rawKey = getApiKey();
+  const apiKey = rawKey?.trim().replace(/['"]/g, '');
   
   if (!apiKey || apiKey === "undefined" || apiKey === "") {
-    throw new Error("CHAVE NÃO DETECTADA: Certifique-se de que a variável de ambiente está salva no painel do site e que você realizou um novo DEPLOY após configurá-la.");
+    throw new Error("SISTEMA BLOQUEADO: A chave 'VITE_API_KEY' não foi detectada. Verifique se o valor está correto no Netlify e se você fez um novo DEPLOY após salvar.");
   }
 
-  // Inicializa o cliente com a chave encontrada
   const ai = new GoogleGenAI({ apiKey });
   
   const response = await ai.models.generateContent({
@@ -53,7 +72,7 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
   });
 
   const text = response.text;
-  if (!text) throw new Error("A rede neural não retornou dados. Verifique sua conexão ou cota da API.");
+  if (!text) throw new Error("A rede neural não retornou dados. Tente novamente.");
 
   try {
     const result = JSON.parse(text.trim());
@@ -64,6 +83,6 @@ export const generatePromptFromTheme = async (theme: string): Promise<GeneratedP
       timestamp: Date.now()
     };
   } catch (err) {
-    throw new Error("Erro ao processar a resposta da IA. Tente reformular o tema.");
+    throw new Error("Falha na interpretação da resposta. Tente um tema diferente.");
   }
 };

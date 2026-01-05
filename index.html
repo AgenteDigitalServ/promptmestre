@@ -65,6 +65,10 @@
             100% { bottom: -100px; }
         }
     </style>
+    <script>
+      // Garante que process.env exista para evitar erros de referência no navegador
+      window.process = window.process || { env: {} };
+    </script>
     <script type="importmap">
 {
   "imports": {
