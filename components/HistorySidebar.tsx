@@ -7,6 +7,7 @@ interface HistorySidebarProps {
   onClose: () => void;
   history: GeneratedPrompt[];
   onSelectItem: (prompt: GeneratedPrompt) => void;
+  onDeleteItem: (id: string) => void;
   onClear: () => void;
 }
 
@@ -15,6 +16,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
   onClose, 
   history, 
   onSelectItem,
+  onDeleteItem,
   onClear
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'favorites'>('all');
@@ -84,28 +86,39 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
             </div>
           ) : (
             filteredHistory.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onSelectItem(item)}
-                className={`w-full text-left p-5 rounded border bg-slate-900/20 hover:bg-slate-900/60 transition-all group relative overflow-hidden ${item.isFavorite ? 'border-yellow-500/20' : 'border-slate-900 hover:border-cyan-500/30'}`}
-              >
-                {item.isFavorite && (
-                  <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500/40"></div>
-                )}
-                <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-3 w-3 ${item.isFavorite ? 'text-yellow-500' : 'text-cyan-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 5l7 7-7 7" />
+              <div key={item.id} className="relative group">
+                <button
+                  onClick={() => onSelectItem(item)}
+                  className={`w-full text-left p-5 rounded border bg-slate-900/20 hover:bg-slate-900/60 transition-all relative overflow-hidden ${item.isFavorite ? 'border-yellow-500/20' : 'border-slate-900 hover:border-cyan-500/30'}`}
+                >
+                  {item.isFavorite && (
+                    <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500/40"></div>
+                  )}
+                  
+                  <div className="flex items-center justify-between mb-3 pr-6">
+                    <span className={`font-tech text-[9px] font-bold uppercase tracking-[0.2em] ${item.isFavorite ? 'text-yellow-500' : 'text-cyan-500'}`}>{item.category}</span>
+                    <span className="font-tech text-[9px] text-slate-600">{new Date(item.timestamp).toLocaleDateString()}</span>
+                  </div>
+                  <h3 className="font-tech text-sm font-bold text-slate-200 group-hover:text-cyan-50 uppercase tracking-tight pr-6 line-clamp-1">{item.theme}</h3>
+                  <div className="mt-3 flex gap-0.5">
+                    {[1,2,3,4,5].map(i => <div key={i} className={`h-0.5 flex-1 ${i <= (item.isFavorite ? 5 : 3) ? (item.isFavorite ? 'bg-yellow-500/40' : 'bg-cyan-500/40') : 'bg-slate-800'}`}></div>)}
+                  </div>
+                </button>
+
+                {/* Botão de Deletar Individual */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteItem(item.id);
+                  }}
+                  className="absolute top-4 right-4 p-1.5 text-slate-700 hover:text-red-500 hover:bg-red-500/5 rounded transition-all opacity-0 group-hover:opacity-100 z-10"
+                  title="Deletar Registro"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                </div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`font-tech text-[9px] font-bold uppercase tracking-[0.2em] ${item.isFavorite ? 'text-yellow-500' : 'text-cyan-500'}`}>{item.category}</span>
-                  <span className="font-tech text-[9px] text-slate-600">{new Date(item.timestamp).toLocaleDateString()}</span>
-                </div>
-                <h3 className="font-tech text-sm font-bold text-slate-200 group-hover:text-cyan-50 uppercase tracking-tight line-clamp-1">{item.theme}</h3>
-                <div className="mt-3 flex gap-0.5">
-                  {[1,2,3,4,5].map(i => <div key={i} className={`h-0.5 flex-1 ${i <= (item.isFavorite ? 5 : 3) ? (item.isFavorite ? 'bg-yellow-500/40' : 'bg-cyan-500/40') : 'bg-slate-800'}`}></div>)}
-                </div>
-              </button>
+                </button>
+              </div>
             ))
           )}
         </div>

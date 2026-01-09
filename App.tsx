@@ -73,8 +73,20 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const deleteHistoryItem = (id: string) => {
+    setState(prev => {
+      const updatedHistory = prev.history.filter(item => item.id !== id);
+      const updatedCurrent = prev.currentPrompt?.id === id ? null : prev.currentPrompt;
+      return {
+        ...prev,
+        history: updatedHistory,
+        currentPrompt: updatedCurrent
+      };
+    });
+  };
+
   const clearHistory = () => {
-    setState(prev => ({ ...prev, history: [] }));
+    setState(prev => ({ ...prev, history: [], currentPrompt: null }));
     localStorage.removeItem('prompt_mestre_history');
   };
 
@@ -117,6 +129,7 @@ const App: React.FC = () => {
         onClose={() => setIsSidebarOpen(false)} 
         history={state.history}
         onSelectItem={selectHistoryItem}
+        onDeleteItem={deleteHistoryItem}
         onClear={clearHistory}
       />
 
