@@ -1,11 +1,37 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    });
+
+    window.addEventListener('appinstalled', () => {
+      setShowInstallBtn(false);
+      setDeferredPrompt(null);
+    });
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBtn(false);
+    }
+    setDeferredPrompt(null);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-cyan-500/20">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -22,18 +48,29 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
           </div>
         </div>
         
-        <button 
-          onClick={toggleSidebar}
-          className="group relative px-4 py-2 text-slate-400 hover:text-cyan-400 transition-all font-tech"
-        >
-          <div className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="hidden sm:inline font-medium uppercase tracking-widest text-[10px]">Log de Sistemas</span>
-          </div>
-          <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 transition-all duration-300 group-hover:w-full"></div>
-        </button>
+        <div className="flex items-center gap-2 sm:gap-6">
+          {showInstallBtn && (
+            <button 
+              onClick={handleInstall}
+              className="px-3 py-1.5 border border-cyan-500/40 bg-cyan-500/5 text-cyan-400 font-tech text-[9px] uppercase tracking-widest rounded hover:bg-cyan-500/20 transition-all animate-pulse"
+            >
+              Instalar App
+            </button>
+          )}
+
+          <button 
+            onClick={toggleSidebar}
+            className="group relative px-4 py-2 text-slate-400 hover:text-cyan-400 transition-all font-tech"
+          >
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="hidden sm:inline font-medium uppercase tracking-widest text-[10px]">Log de Sistemas</span>
+            </div>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 transition-all duration-300 group-hover:w-full"></div>
+          </button>
+        </div>
       </div>
     </header>
   );

@@ -3,8 +3,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PromptMestre">
+    
     <title>PROMPT MESTRE - Engenharia de Prompt de Elite</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1162/1162456.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +34,7 @@
             color: #e2e8f0;
             margin: 0;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         .font-tech {
             font-family: 'Michroma', sans-serif;
@@ -64,9 +74,13 @@
             0% { bottom: 100%; }
             100% { bottom: -100px; }
         }
+        
+        /* Ajustes Mobile */
+        @media (max-width: 640px) {
+            body { background-size: 20px 20px; }
+        }
     </style>
     <script>
-      // Garante que process.env exista para evitar erros de referência no navegador
       window.process = window.process || { env: {} };
     </script>
     <script type="importmap">

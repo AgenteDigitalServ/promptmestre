@@ -7,6 +7,15 @@ const mountApp = () => {
   const rootElement = document.getElementById('root');
   if (!rootElement) return;
 
+  // Registrar Service Worker para PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.error('SW registration failed:', err);
+      });
+    });
+  }
+
   try {
     const root = ReactDOM.createRoot(rootElement);
     root.render(
